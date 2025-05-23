@@ -7,37 +7,34 @@
     <!--
         function calculate(){
             try {
-                // 获取元素（兼容IE4-5写法）
+                // 兼容IE4的DOM访问方式
                 var formula = document.forms[0].elements['formula'].value;
-                var resultDiv = document.getElementById('result');
                 
                 // 空输入检测
-                if(formula === ""){
-                    resultDiv.innerHTML = "请输入计算公式";
+                if(!formula || formula.replace(/^\s+|\s+$/g, '') === ""){
+                    alert("请输入计算公式");
                     return false;
                 }
                 
-                // 数学符号替换（兼容ES3）
+                // 数学符号替换（ES3兼容）
                 var expr = formula
-                    .replace(/\^/g, 'Math.pow')      // 处理幂运算
-                    .replace(/(\d+)Math.pow(\s*)(\d+)/g, 'Math.pow($1,$3)') // 转换2^3为Math.pow(2,3)
+                    .replace(/\^/g, ',')  // 将^转换为逗号
+                    .replace(/(\d+),(\d+)/g, 'Math.pow($1,$2)') // 转换2^3为Math.pow(2,3)
                     .replace(/sqrt/g, 'Math.sqrt')
                     .replace(/sin/g, 'Math.sin')
                     .replace(/cos/g, 'Math.cos')
                     .replace(/tan/g, 'Math.tan')
-                    .replace(/log\(/g, 'Math.log(')   // 默认log为自然对数
+                    .replace(/log\(/g, 'Math.log10(')
+                    .replace(/ln\(/g, 'Math.log(')
                     .replace(/abs/g, 'Math.abs')
                     .replace(/pi/g, 'Math.PI')
-                    .replace(/e/g, 'Math.E');
+                    .replace(/e\b/g, 'Math.E');
 
-                // 执行计算（兼容最老旧的eval实现）
-                var result = eval(expr);
-                
-                // 显示结果（兼容早期innerHTML实现）
-                resultDiv.innerHTML = "结果: " + result;
+                // 执行计算并弹窗显示
+                alert("计算结果: " + eval(expr));
             } 
             catch(err){
-                document.getElementById('result').innerHTML = "错误: " + err.message;
+                alert("计算错误: " + err.message.split('\n')[0]); // 兼容早期错误信息格式
             }
             return false; // 阻止表单提交
         }
@@ -45,18 +42,10 @@
     </script>
 </head>
 <body>
-    <h1>科学计算器</h1>
+    <h2>科学计算器</h2>
     <form onsubmit="return calculate()" action="javascript:void(0)">
         <input type="text" name="formula" size="25" value="">
-        <input type="button" value="计算" onclick="return calculate()">
-        <div id="result"></div>
+        <input type="submit" value="计算">
     </form>
-    
-    <p>示例公式：</p>
-    <ul>
-        <li>3+5*2</li>
-        <li>Math.pow(2,3)</li>
-        <li>Math.sqrt(9)</li>
-    </ul>
 </body>
 </html>
