@@ -1,51 +1,47 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    <title>科学计算器</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <script type="text/javascript">
+    <title>计算器</title>
+    <script language="JavaScript">
     <!--
-        function calculate(){
-            try {
-                // 兼容IE4的DOM访问方式
-                var formula = document.forms[0].elements['formula'].value;
-                
-                // 空输入检测
-                if(!formula || formula.replace(/^\s+|\s+$/g, '') === ""){
-                    alert("请输入计算公式");
-                    return false;
-                }
-                
-                // 数学符号替换（ES3兼容）
-                var expr = formula
-                    .replace(/\^/g, ',')  // 将^转换为逗号
-                    .replace(/(\d+),(\d+)/g, 'Math.pow($1,$2)') // 转换2^3为Math.pow(2,3)
-                    .replace(/sqrt/g, 'Math.sqrt')
-                    .replace(/sin/g, 'Math.sin')
-                    .replace(/cos/g, 'Math.cos')
-                    .replace(/tan/g, 'Math.tan')
-                    .replace(/log\(/g, 'Math.log10(')
-                    .replace(/ln\(/g, 'Math.log(')
-                    .replace(/abs/g, 'Math.abs')
-                    .replace(/pi/g, 'Math.PI')
-                    .replace(/e\b/g, 'Math.E');
-
-                // 执行计算并弹窗显示
-                alert("计算结果: " + eval(expr));
-            } 
-            catch(err){
-                alert("计算错误: " + err.message.split('\n')[0]); // 兼容早期错误信息格式
-            }
-            return false; // 阻止表单提交
+    function calculate(){
+        // 原始DOM访问方式
+        var formula = document.forms.calcform.formula.value;
+        
+        // 基础符号替换
+        var expr = formula
+            .replace(/\^/g, ',')          // 将2^3转换为pow(2,3)
+            .replace(/pow\(/g, 'Math.pow(')
+            .replace(/sqrt/g, 'Math.sqrt')
+            .replace(/sin/g, 'Math.sin')
+            .replace(/pi/g, 'Math.PI');
+        
+        // 直接显示结果
+        try {
+            var result = eval(expr);
+            document.forms.calcform.result.value = result;
+        } catch(e){
+            alert("错误: " + e.message);
         }
+        return false;
+    }
     //-->
     </script>
 </head>
 <body>
-    <h2>科学计算器</h2>
-    <form onsubmit="return calculate()" action="javascript:void(0)">
-        <input type="text" name="formula" size="25" value="">
+    <form name="calcform" onsubmit="return calculate()">
+        <input type="text" name="formula" size="20">
         <input type="submit" value="计算">
+        <br>
+        结果：<input type="text" name="result" readonly>
     </form>
+
+    <p>输入示例：</p>
+    <pre>
+    Math.sqrt(9)
+    3+5*2
+    Math.pow(2,3)
+    Math.sin(Math.PI)
+    </pre>
 </body>
 </html>
